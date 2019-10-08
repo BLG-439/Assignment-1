@@ -20,22 +20,22 @@ from bs4 import BeautifulSoup
 
 # tts = gTTS('Hello! Welcome to our application.')
 # tts.save('hello.mp3')
-
+#
 # tts = gTTS('To sign in, please say your email.')
 # tts.save('sign_in1.mp3')
-
+#
 # tts = gTTS('Please, say your password.')
 # tts.save('sign_in2.mp3')
-
+#
 # tts = gTTS('The email does not exist. Please say your email again.')
 # tts.save('email_sign_in_error.mp3')
-
+#
 # tts = gTTS('The password is incorrect! Please say the password again.')
 # tts.save('password_sign_in_error.mp3')
-
+#
 # tts = gTTS('Signed in successfully.')
 # tts.save('success.mp3')
-
+#
 # tts = gTTS('To send a new mail say "SEND AN EMAIL". To check the inbox say "CHECK INBOX". To log out say "LOG OUT". To hear the menu again say "HEAR MENU".')
 # tts.save('main_menu.mp3')
 
@@ -46,13 +46,13 @@ sound = AudioSegment.from_file("sign_in1.mp3", format="mp3")
 play(sound)
 sender_email = "shqiperi124@gmail.com"
 kot="ajt"
-kot=raw_input("a")
+kot=input("a")
 
 sound = AudioSegment.from_file("sign_in2.mp3", format="mp3")
 play(sound)
 password="KotKotKot"
 # receiver_email = "shqiperi124@gmail.com"
-kot=raw_input("a")
+kot=input("a")
 
 # sound = AudioSegment.from_file("sign_in1.mp3", format="mp3")
 # play(sound)
@@ -90,7 +90,7 @@ elif sender_email_server=="gmail":
 server.login(sender_email, password)
 mail.login(sender_email, password)
 
-if raw_input("What do you want to do: 1. Send\n2. Read"):
+if input("What do you want to do: 1. Send\n2. Read"):
   server.sendmail(sender_email, receiver_email, message)
 else:
   #READ
