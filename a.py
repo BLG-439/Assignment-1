@@ -18,8 +18,8 @@ from bs4 import BeautifulSoup
 #     print(get)
 
 
-# tts = gTTS('Hello! Welcome to our application.')
-# tts.save('hello.mp3')
+#tts = gTTS('Hello! Welcome to our application.')
+#tts.save('hello.mp3')
 #
 # tts = gTTS('To sign in, please say your email.')
 # tts.save('sign_in1.mp3')
