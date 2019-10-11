@@ -1,0 +1,89 @@
+{%extends "layout.html"%}
+{%block Main%}
+    <div class="content-section">
+        <form method="POST" action="">
+            {{form.hidden_tag()}}
+            <fieldset class="form-group">
+                <div class="form-group">
+                    {{form.email.label(class="form-control-label", id="email1")}}
+                    {{form.email(class="form-control form-control-lg", id="email2")}}
+                </div>
+                <div class="form-group">
+                    {{form.password.label(class="form-control-label password1")}}
+                    {{form.password(class="form-control form-control-lgpassword2")}}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{form.submit(class="btn btn-outline-info")}}
+            </div>
+        </form>
+    </div>
+    <h1>Welcome to our application</h1>
+    <audio controls autoplay hidden id="Hello">
+    <source src="{{Hello}}" type="audio/mpeg">
+    Your browser does not support the audio element.
+    </audio>
+    <audio controls id="Email" hidden>
+        <source src="{{Signin_email}}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio controls id="Password" hidden>
+        <source src="{{Signin_password}}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <form id="labnol" method="get" action="https://www.google.com/search">
+    <div class="speech">
+        <input type="text" name="q" id="transcript" placeholder="Speak" />
+        <img id="barca" src="https://upload.wikimedia.org/wikipedia/en/thumb/4/47/FC_Barcelona_%28crest%29.svg/1200px-FC_Barcelona_%28crest%29.svg.png" />
+    </div>
+    </form>
+{%endblock%}
+
+
+{%block Script%}
+<script>
+    audio1=document.getElementById("Hello");
+    audio2=document.getElementById("Email");
+    audio3=document.getElementById("Password");
+    audio1.onended=function(){
+        audio2.play();
+    }
+    audio2.onended=function(){
+        startDictation("transcript", function(){
+            audio3.play(startDictation("password1", function(){
+                
+            }));
+        });
+    };
+
+    function startDictation(id, callback) {
+
+        if (window.hasOwnProperty('webkitSpeechRecognition')) {
+
+            var recognition = new webkitSpeechRecognition();
+
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.lang = "en-US";
+            //recognition.lang = "tr-TR";
+            recognition.start();
+
+            recognition.onresult = function(e) {
+            hold= e.results[0][0].transcript;
+            kot=hold.inemail1dexOf(" at ");
+            hold=(hold.slice(0,kot)).replace(/\s/g, "") + "@" + hold.slice(kot+4);
+            document.getElementById(id).value=hold;
+            //Duhet te fusim checking per UPPERCASE dhe LOWERCASE
+            recognition.stop();
+            callback();
+            };
+            
+            recognition.onerror = function(e) {
+                recognition.stop();
+                callback();
+            }
+        }
+    }
+</script>
+{%endblock%}
