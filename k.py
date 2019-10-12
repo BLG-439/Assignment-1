@@ -12,7 +12,6 @@
 #     get = r1.recognize_google(audio)
 #     print(get)
 
-
 from gtts import gTTS
 from pydub import AudioSegment
 from pydub.playback import play
@@ -103,21 +102,31 @@ def send_email(receiver_email, message):
 #      mail.logout()
 #      return automated_msg
 
+def get_from_subject_body(header_response_part, body_response_part):
+
+    header_msg = email.message_from_string(header_response_part)
+    body_msg = email.message_from_string(body_response_part)
+    from_ = header_msg['from']
+    subject_ = header_msg['subject']
+    body_msg=body_response_part
+    soup = BeautifulSoup(body_msg, "html.parser")
+    body = soup.get_text()
+    return from_, subject_, body
+
 def read_inbox(from_, subject_, body):
 
-    automated_msg = ('From : ' + from_ + '\n' +
-                     'Subject : ' + subject_ + '\n' +
-                     'Body : '  + body)
+    automated_msg = ('From : ' + from_ +
+                     '\nSubject : ' + subject_ +
+                     '\nBody : '  + body)
     return automated_msg
 
 def go_over_inbox(sender_email, password):
-
-
       mail=imaplib.IMAP4_SSL("imap.gmail.com")
       mail.login(sender_email, "weliveinasociety")
       mail.select('inbox')
       typ,data = mail.search(None, '(UNSEEN)')
       mail_ids = data[0]
+      print(mail_ids)
 
 
       if(not mail_ids):
@@ -141,9 +150,17 @@ def go_over_inbox(sender_email, password):
             #forward_message=forward_msg(from_,receiver_email,subject_,body)
             #send_email(receiver_email,forward_message)
 
-            return
+            return read_inbox(from_, subject_, body)
 
 #send_email(receiver_email, message)
-go_over_inbox("arthurfleck40@gmail.com", "weliveinasociety")
+def get_messages(sender_email, password):
+  Messages=[]
+  hold=go_over_inbox(sender_email, password)
+  while(hold):
+    Messages.append(hold)
+    hold=go_over_inbox(sender_email, password)
+  return Messages
+
+#get_messages("arthurfleck40@gmail.com", "weliveinasociety")
 #for i in msgs:
 #  print i

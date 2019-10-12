@@ -1,0 +1,58 @@
+{%extends "layout.html"%}
+{%block Main%}
+    <h1>Bullshit</h1>
+    {%if Messages%}
+        {%for message in Messages%}
+            <div class="message">
+                {{message}}
+            </div>
+        {%endfor%}
+    {%else%}
+            <p>No emails Unread</p>
+    {%endif%}
+    <input class="form-control form-control-lg" id="Input" name="Input" type="text" value="">
+    <script>
+        startDictation("Input");
+        function startDictation(id) {
+    
+            if (window.hasOwnProperty('webkitSpeechRecognition')) {
+    
+                var recognition = new webkitSpeechRecognition();
+    
+                recognition.continuous = false;
+                recognition.interimResults = false;
+    
+                recognition.lang = "en-US";
+                //recognition.lang = "tr-TR";
+                recognition.start();
+    
+                recognition.onresult = function(e) {
+                    hold= e.results[0][0].transcript;
+                    hold=hold.toLowerCase()
+                    console.log(hold);
+                    if(hold.slice(0,6)=="please"){
+                        index=hold.indexOf("uppercase")
+                        while(index!=-1){
+                            console.log(hold)
+                            hold=hold.slice(0,index)+(hold[index+10]).toUpperCase()+hold.slice(index+11)
+                            index=hold.indexOf("uppercase")
+                        }
+                        hold=hold.replace(" at ", "@")
+                        hold=hold.replace("underscore", "_")
+                        hold=hold.replace(/\s/g, "")
+                        document.getElementById(id).value=hold;
+                        recognition.stop();
+                    }
+                    recognition.stop();
+                };
+                
+                recognition.onerror = function(e) {
+                    recognition.stop();
+                }
+                recognition.onend=function(){
+                    startDictation("Input");
+                }
+            }
+        }
+    </script>
+{%endblock%}
