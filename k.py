@@ -68,21 +68,61 @@ def send_email(receiver_email, message):
   server.quit()
 
 
-def read_inbox(sender_email, password):
+#def read_inbox(sender_email, password):
+#
+#      automated_msg=[]
+#      #instead of this get password in voice and turn it to text
+#
+#
+#      mail=imaplib.IMAP4_SSL("imap.gmail.com")
+#      mail.login(sender_email, password)
+#      mail.select('inbox')
+#      typ,data = mail.search(None, '(UNSEEN)')
+#      mail_ids = data[0]
+#
+#
+#      if(not mail_ids):
+#        automated_msg.append('No emails unread')
+#      else:
+#
+#        id_list = mail_ids.split()
+#
+#        for id_ in reversed(id_list):
+#          header_type, header_data = mail.fetch(id_, '(RFC822)' )
+##          body_type, body_data = mail.fetch(id_, '(UID BODY[TEXT])')
+#
+#          for header_response_part, body_response_part in zip(header_data, body_data):
+#            if isinstance(header_response_part,tuple) and isinstance(body_response_part,tuple):
+#              header_msg = email.message_from_string(header_response_part[1])
+#              from_= 'From : ' + header_msg['from'] + '\n'
+#              subject_= 'Subject : ' + header_msg['subject'] + '\n'
+#              body_msg=body_response_part[1]
+#              soup = BeautifulSoup(body_msg, "html.parser")
+#              body = 'Body : ' + soup.get_text()
+#              automated_msg.append(from_ + subject_ + body)
+#      mail.logout()
+#      return automated_msg
 
-      automated_msg=[]
-      #instead of this get password in voice and turn it to text
+def read_inbox(from_, subject_, body):
+
+    automated_msg = ('From : ' + from_ + '\n' +
+                     'Subject : ' + subject_ + '\n' +
+                     'Body : '  + body)
+    return automated_msg
+
+def go_over_inbox(sender_email, password):
 
 
       mail=imaplib.IMAP4_SSL("imap.gmail.com")
-      mail.login(sender_email, password)
+      mail.login(sender_email, "weliveinasociety")
       mail.select('inbox')
       typ,data = mail.search(None, '(UNSEEN)')
       mail_ids = data[0]
 
 
       if(not mail_ids):
-        automated_msg.append('No emails unread')
+          print ('No emails unread')
+          return
       else:
 
         id_list = mail_ids.split()
@@ -91,19 +131,19 @@ def read_inbox(sender_email, password):
           header_type, header_data = mail.fetch(id_, '(RFC822)' )
           body_type, body_data = mail.fetch(id_, '(UID BODY[TEXT])')
 
-          for header_response_part, body_response_part in zip(header_data, body_data):
-            if isinstance(header_response_part,tuple) and isinstance(body_response_part,tuple):
-              header_msg = email.message_from_string(header_response_part[1])
-              from_= 'From : ' + header_msg['from'] + '\n'
-              subject_= 'Subject : ' + header_msg['subject'] + '\n'
-              body_msg=body_response_part[1]
-              soup = BeautifulSoup(body_msg, "html.parser")
-              body = 'Body : ' + soup.get_text()
-              automated_msg.append(from_ + subject_ + body)
-      mail.logout()
-      return automated_msg
+          if isinstance(header_data[0],tuple) and isinstance(body_data[0],tuple):
+            header_response_part = header_data[0][1].decode('utf-8')
+            body_response_part= body_data[0][1].decode('utf-8')
+            from_,subject_,body = get_from_subject_body(header_response_part ,body_response_part)
+            #READ INBOX
+            print (read_inbox(from_,subject_,body))
+            #FORWARD MESSAGE
+            #forward_message=forward_msg(from_,receiver_email,subject_,body)
+            #send_email(receiver_email,forward_message)
+
+            return
 
 #send_email(receiver_email, message)
-#msgs=read_inbox()
+go_over_inbox("arthurfleck40@gmail.com", "weliveinasociety")
 #for i in msgs:
 #  print i
