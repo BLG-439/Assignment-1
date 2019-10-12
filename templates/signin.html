@@ -1,16 +1,18 @@
 {%extends "layout.html"%}
 {%block Main%}
     <div class="content-section">
+        <h1>Welcome to our application</h1>
         <form method="POST" action="">
+            <!--For errors watch the tutorial-->
             {{form.hidden_tag()}}
             <fieldset class="form-group">
                 <div class="form-group">
-                    {{form.email.label(class="form-control-label", id="email1")}}
-                    {{form.email(class="form-control form-control-lg", id="email2")}}
+                    {{form.email.label(class="form-control-label")}}
+                    {{form.email(class="form-control form-control-lg", id="email")}}
                 </div>
                 <div class="form-group">
-                    {{form.password.label(class="form-control-label password1")}}
-                    {{form.password(class="form-control form-control-lgpassword2")}}
+                    {{form.password.label(class="form-control-label")}}
+                    {{form.password(class="form-control form-control-lg", id="password")}}
                 </div>
             </fieldset>
             <div class="form-group">
@@ -18,7 +20,6 @@
             </div>
         </form>
     </div>
-    <h1>Welcome to our application</h1>
     <audio controls autoplay hidden id="Hello">
     <source src="{{Hello}}" type="audio/mpeg">
     Your browser does not support the audio element.
@@ -31,12 +32,6 @@
         <source src="{{Signin_password}}" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
-    <form id="labnol" method="get" action="https://www.google.com/search">
-    <div class="speech">
-        <input type="text" name="q" id="transcript" placeholder="Speak" />
-        <img id="barca" src="https://upload.wikimedia.org/wikipedia/en/thumb/4/47/FC_Barcelona_%28crest%29.svg/1200px-FC_Barcelona_%28crest%29.svg.png" />
-    </div>
-    </form>
 {%endblock%}
 
 
@@ -49,11 +44,15 @@
         audio2.play();
     }
     audio2.onended=function(){
-        startDictation("transcript", function(){
-            audio3.play(startDictation("password1", function(){
-                
-            }));
+        startDictation("email", function(){
+            audio3.play();
         });
+    };
+
+    audio3.onended=function(){
+        startDictation("password", function(){
+            console.log("Logging in.")
+        })
     };
 
     function startDictation(id, callback) {
@@ -70,13 +69,20 @@
             recognition.start();
 
             recognition.onresult = function(e) {
-            hold= e.results[0][0].transcript;
-            kot=hold.inemail1dexOf(" at ");
-            hold=(hold.slice(0,kot)).replace(/\s/g, "") + "@" + hold.slice(kot+4);
-            document.getElementById(id).value=hold;
-            //Duhet te fusim checking per UPPERCASE dhe LOWERCASE
-            recognition.stop();
-            callback();
+                hold= e.results[0][0].transcript;
+                hold=hold.toLowerCase()
+                index=hold.indexOf("uppercase")
+                while(index!=-1){
+                    console.log(hold)
+                    hold=hold.slice(0,index)+(hold[index+10]).toUpperCase()+hold.slice(index+11)
+                    index=hold.indexOf("uppercase")
+                }
+                hold=hold.replace(" at ", "@")
+                hold=hold.replace("underscore", "_")
+                hold=hold.replace(/\s/g, "")
+                document.getElementById(id).value=hold;
+                //recognition.stop();
+                callback();
             };
             
             recognition.onerror = function(e) {

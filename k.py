@@ -44,31 +44,6 @@ from bs4 import BeautifulSoup
 # tts = gTTS('To send a new mail say "SEND AN EMAIL". To check the inbox say "CHECK INBOX". To log out say "LOG OUT". To hear the menu again say "HEAR MENU".')
 # tts.save('main_menu.mp3')
 
-sound = AudioSegment.from_file("hello.mp3", format="mp3")
-play(sound)
-
-sound = AudioSegment.from_file("sign_in1.mp3", format="mp3")
-play(sound)
-sender_email = "shqiperi124@gmail.com"
-kot="ajt"
-kot=raw_input("a")
-
-sound = AudioSegment.from_file("sign_in2.mp3", format="mp3")
-play(sound)
-receiver_email = "shqiperi124@gmail.com"
-kot=raw_input("a")
-
-
-
-sound = AudioSegment.from_file("sign_in1.mp3", format="mp3")
-play(sound)
-message = """\
-Subject: Hi there
-
-234567io"""
-kot=raw_input("a")
-
-
 
 #get voice versions of these and turn them to text
 #hotmail does not work
@@ -93,14 +68,14 @@ def send_email(receiver_email, message):
   server.quit()
 
 
-def read_inbox():
+def read_inbox(sender_email, password):
 
       automated_msg=[]
       #instead of this get password in voice and turn it to text
 
 
       mail=imaplib.IMAP4_SSL("imap.gmail.com")
-      mail.login(sender_email, "KotKotKot")
+      mail.login(sender_email, password)
       mail.select('inbox')
       typ,data = mail.search(None, '(UNSEEN)')
       mail_ids = data[0]
@@ -108,7 +83,6 @@ def read_inbox():
 
       if(not mail_ids):
         automated_msg.append('No emails unread')
-
       else:
 
         id_list = mail_ids.split()
@@ -126,10 +100,10 @@ def read_inbox():
               soup = BeautifulSoup(body_msg, "html.parser")
               body = 'Body : ' + soup.get_text()
               automated_msg.append(from_ + subject_ + body)
-
+      mail.logout()
       return automated_msg
 
-send_email(receiver_email, message)
-msgs=read_inbox()
-for i in msgs:
-  print i
+#send_email(receiver_email, message)
+#msgs=read_inbox()
+#for i in msgs:
+#  print i
