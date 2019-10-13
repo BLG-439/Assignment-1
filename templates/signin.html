@@ -21,15 +21,15 @@
         </form>
     </div>
     <audio controls autoplay hidden id="Hello">
-    <source src="{{Hello}}" type="audio/mpeg">
+    <source src="static/audio/hello.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
     </audio>
     <audio controls id="Email" hidden>
-        <source src="{{Signin_email}}" type="audio/mpeg">
+        <source src="static/audio/sign_in1.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
     <audio controls id="Password" hidden>
-        <source src="{{Signin_password}}" type="audio/mpeg">
+        <source src="static/audio/sign_in2.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 {%endblock%}
@@ -56,14 +56,10 @@
     };
 
     function startDictation(id, callback) {
-
         if (window.hasOwnProperty('webkitSpeechRecognition')) {
-
             var recognition = new webkitSpeechRecognition();
-
             recognition.continuous = false;
             recognition.interimResults = false;
-
             recognition.lang = "en-US";
             //recognition.lang = "tr-TR";
             recognition.start();

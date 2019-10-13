@@ -1,6 +1,5 @@
 {%extends "layout.html"%}
 {%block Main%}
-    <h1>Bullshit</h1>
     {%if Messages%}
         {%for message in Messages%}
             <div class="message">
@@ -10,27 +9,102 @@
     {%else%}
             <p>No emails Unread</p>
     {%endif%}
+    <form method="POST" action="" class="col-sm-4">
+        <!--For errors watch the tutorial-->
+        {{SendEmailForm.hidden_tag()}}
+        <h1>Send an Sendemail</h1>
+        <fieldset class="form-group">
+            <div class="form-group">
+                {{SendEmailForm.to.label(class="form-control-label")}}
+                {{SendEmailForm.to(class="form-control form-control-lg", id="To")}}
+            </div>
+            <div class="form-group">
+                {{SendEmailForm.subject.label(class="form-control-label")}}
+                {{SendEmailForm.subject(class="form-control form-control-lg", id="Subject")}}
+            </div>
+            <div class="form-group">
+                {{SendEmailForm.body.label(class="form-control-label")}}
+                {{SendEmailForm.body(class="form-control form-control-lg", id="Body")}}
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{SendEmailForm.submit(class="btn btn-outline-info")}}
+        </div>
+    </form>
+    <form method="POST" action="" class="col-sm-4">
+        <!--For errors watch the tutorial-->
+        {{ReadFolderForm.hidden_tag()}}
+        <h1>Send a folder</h1>
+        <fieldset class="form-group">
+            <div class="form-group">
+                {{ReadFolderForm.to.label(class="form-control-label")}}
+                {{ReadFolderForm.to(class="form-control form-control-lg", id="FolderName")}}
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{ReadFolderForm.submit(class="btn btn-outline-info")}}
+        </div>
+    </form>
     <input class="form-control form-control-lg" id="Input" name="Input" type="text" value="">
+    <audio controls hidden id="Audio_To">
+        <source src="static/audio/send_to.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio controls hidden id="Audio_Subject">
+        <source src="static/audio/send_subject.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio controls hidden id="Audio_Body">
+        <source src="static/audio/send_body.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio controls id="Audio_Sent" hidden>
+        <source src="static/audio/send_sent.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+{%endblock%}
+
+{%block Script%}
     <script>
+        audio1=document.getElementById("Audio_To");
+        audio2=document.getElementById("Audio_Subject");
+        audio3=document.getElementById("Audio_Body");
+        audio4=document.getElementById("Audio_Sent");
+        audio1.onended=function(){
+            startDictation("To", function(){
+                audio2.play();
+            });
+        }
+        audio2.onended=function(){
+            startDictation("Subject", function(){
+                audio3.play();
+            })
+        }
+        audio3.onended=function(){
+            startDictation("Body", function(){
+                audio4.play();
+                console.log("Email sent");
+            });
+        }
+        audio4.onended=function(){
+            startDictation("Input");
+        }
+        
         startDictation("Input");
-        function startDictation(id) {
-    
+        function startDictation(id, callback) {
             if (window.hasOwnProperty('webkitSpeechRecognition')) {
-    
                 var recognition = new webkitSpeechRecognition();
-    
                 recognition.continuous = false;
                 recognition.interimResults = false;
-    
                 recognition.lang = "en-US";
                 //recognition.lang = "tr-TR";
                 recognition.start();
-    
+
                 recognition.onresult = function(e) {
                     hold= e.results[0][0].transcript;
                     hold=hold.toLowerCase()
                     console.log(hold);
-                    if(hold.slice(0,6)=="please"){
+                    if(hold.slice(0,6)=="please" && id=="Input"){ //Command list
                         index=hold.indexOf("uppercase")
                         while(index!=-1){
                             console.log(hold)
@@ -39,9 +113,31 @@
                         }
                         hold=hold.replace(" at ", "@")
                         hold=hold.replace("underscore", "_")
-                        hold=hold.replace(/\s/g, "")
-                        document.getElementById(id).value=hold;
-                        recognition.stop();
+                        document.getElementById(id).value=hold[0].toUpperCase()+hold.slice(1);
+                        if(hold.indexOf("send") != -1){
+                            audio1.play();
+                        }
+                    }
+                    else if(id!="Input"){ //General user input
+                        //Make letters uppercase
+                        index=hold.indexOf("uppercase")
+                        while(index!=-1){
+                            console.log(hold)
+                            hold=hold.slice(0,index)+(hold[index+10]).toUpperCase()+hold.slice(index+11)
+                            index=hold.indexOf("uppercase")
+                        }
+                        //Replace Symbols
+                        hold=hold.replace("underscore", "_")
+                        if(id=="To"){//Email case
+                            hold=hold.replace(" at ", "@")
+                            hold=hold.replace("underscore", "_")
+                            hold=hold.replace(/\s/g, "")
+                            document.getElementById(id).value=hold;
+                        }
+                        else{
+                            document.getElementById(id).value=hold[0].toUpperCase()+hold.slice(1);
+                        }
+                        callback();
                     }
                     recognition.stop();
                 };
@@ -49,10 +145,18 @@
                 recognition.onerror = function(e) {
                     recognition.stop();
                 }
+
                 recognition.onend=function(){
-                    startDictation("Input");
+                    if(!isPlaying(audio1) && !isPlaying(audio2) && !isPlaying(audio3) && !isPlaying(audio4)){
+                        startDictation(id,callback);
+                    }
                 }
             }
+        }
+
+        //To check if any audio is being played
+        function isPlaying(audio) {
+            return !audio.paused;
         }
     </script>
 {%endblock%}

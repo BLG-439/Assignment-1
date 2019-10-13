@@ -40,8 +40,7 @@ from bs4 import BeautifulSoup
 # tts = gTTS('Signed in successfully.')
 # tts.save('success.mp3')
 #
-# tts = gTTS('To send a new mail say "SEND AN EMAIL". To check the inbox say "CHECK INBOX". To log out say "LOG OUT". To hear the menu again say "HEAR MENU".')
-# tts.save('main_menu.mp3')
+
 
 
 #get voice versions of these and turn them to text
@@ -50,11 +49,8 @@ from bs4 import BeautifulSoup
 # receiver_email = "shqiperi124@hotmail.com"
 
 
-
-
 # password = getpass.getpass("Type your password and press enter: ")
-def send_email(receiver_email, message):
-
+def send_email(sender_email, password, receiver_email, message):
   port = 465  # For SSL
 
 
@@ -62,10 +58,9 @@ def send_email(receiver_email, message):
   context = ssl.create_default_context()
   server=smtplib.SMTP_SSL("smtp.gmail.com", port)
   # In case of outlook server = smtplib.SMTP(host='smtp-mail.outlook.com', port=587)
-  server.login(sender_email, "KotKotKot")
+  server.login(sender_email, password)
   server.sendmail(sender_email, receiver_email, message)
   server.quit()
-
 
 #def read_inbox(sender_email, password):
 #
@@ -164,3 +159,10 @@ def get_messages(sender_email, password):
 #get_messages("arthurfleck40@gmail.com", "weliveinasociety")
 #for i in msgs:
 #  print i
+messages=get_messages("arthurfleck40@gmail.com", "weliveinasociety")
+i=0
+for message in messages:
+  print(message)
+  i+=1
+  tts = gTTS(message)
+  tts.save('kot'+str(i)+'.mp3')
